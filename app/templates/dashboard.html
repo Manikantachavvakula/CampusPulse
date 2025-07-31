@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Hostel Feedback Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-tachometer-alt"></i> Student Dashboard</h2>
+        <p class="text-muted">Welcome back, {{ session.username }}!</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5>Submit Feedback</h5>
+                        <p>Share your experience</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-plus-circle fa-2x"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('submit_feedback') }}" class="btn btn-light btn-sm">Submit Now</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5>Rate Facilities</h5>
+                        <p>Rate hostel services</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-star fa-2x"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('rate_facilities') }}" class="btn btn-light btn-sm">Rate Now</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5>Track Feedback</h5>
+                        <p>Check status updates</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-search fa-2x"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('track_feedback') }}" class="btn btn-light btn-sm">Track Now</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h5>Facility Ratings</h5>
+                        <p>View all ratings</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                </div>
+                <a href="{{ url_for('facility_ratings') }}" class="btn btn-light btn-sm">View Ratings</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <h4>Recent Feedbacks</h4>
+        {% if feedbacks %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Comments & Response</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for feedback in feedbacks %}
+                    <tr>
+                        <td>
+                            <span class="badge badge-secondary">{{ feedback.category }}</span>
+                            {% if feedback.is_anonymous %}
+                                <br><small class="text-muted"><i class="fas fa-user-secret"></i> Anonymous</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if feedback.status == 'pending' %}
+                                <span class="badge badge-warning">Pending</span>
+                            {% elif feedback.status == 'resolved' %}
+                                <span class="badge badge-success">Resolved</span>
+                            {% else %}
+                                <span class="badge badge-danger">Rejected</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ feedback.created_at.strftime('%d %b %Y') }}</td>
+                        <td>
+                            <div>{{ feedback.comments[:50] }}{% if feedback.comments|length > 50 %}...{% endif %}</div>
+                            {% if feedback.admin_response %}
+                            <div class="mt-1">
+                                <small class="text-primary"><strong>Admin:</strong> {{ feedback.admin_response[:40] }}{% if feedback.admin_response|length > 40 %}...{% endif %}</small>
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No feedbacks submitted yet. <a href="{{ url_for('submit_feedback') }}">Submit your first feedback</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

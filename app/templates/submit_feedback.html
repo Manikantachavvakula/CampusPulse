@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Feedback - Hostel Feedback Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4><i class="fas fa-plus-circle"></i> Submit Feedback</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" id="feedbackForm">
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                        <select class="form-control" id="category" name="category" required onchange="toggleFoodOptions()">
+                            <option value="">Select Category</option>
+                            <option value="Food">Food</option>
+                            <option value="Library">Library</option>
+                            <option value="Washrooms">Washrooms</option>
+                            <option value="Sports Grounds">Sports Grounds</option>
+                            <option value="Labs">Labs</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Food-specific options -->
+                    <div id="foodOptions" style="display: none;">
+                        <div class="form-group">
+                            <label>Days (Select applicable days)</label>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="monday" name="days" value="Monday">
+                                <label class="form-check-label" for="monday">Mon</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="tuesday" name="days" value="Tuesday">
+                                <label class="form-check-label" for="tuesday">Tue</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="wednesday" name="days" value="Wednesday">
+                                <label class="form-check-label" for="wednesday">Wed</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="thursday" name="days" value="Thursday">
+                                <label class="form-check-label" for="thursday">Thu</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="friday" name="days" value="Friday">
+                                <label class="form-check-label" for="friday">Fri</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="saturday" name="days" value="Saturday">
+                                <label class="form-check-label" for="saturday">Sat</label>
+                            </div>
+                            <div class="form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="sunday" name="days" value="Sunday">
+                                <label class="form-check-label" for="sunday">Sun</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="quality">Food Quality</label>
+                            <select class="form-control" id="quality" name="quality">
+                                <option value="">Select Quality</option>
+                                <option value="Good">Good</option>
+                                <option value="Average">Average</option>
+                                <option value="Bad">Bad</option>
+                                <option value="Very Bad">Very Bad</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rating">Overall Rating</label>
+                        <select class="form-control" id="rating" name="rating">
+                            <option value="">Select Rating</option>
+                            <option value="1">1 - Very Poor</option>
+                            <option value="2">2 - Poor</option>
+                            <option value="3">3 - Average</option>
+                            <option value="4">4 - Good</option>
+                            <option value="5">5 - Excellent</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="comments">Comments *</label>
+                        <textarea class="form-control" id="comments" name="comments" rows="4" required 
+                                placeholder="Please describe your feedback in detail..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="image">Upload Image (Optional)</label>
+                        <input type="file" class="form-control-file" id="image" name="image" accept=".jpg,.jpeg,.png">
+                        <small class="form-text text-muted">Only JPG and PNG files are allowed</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="anonymous" name="anonymous" value="1">
+                            <label class="form-check-label" for="anonymous">
+                                <i class="fas fa-user-secret"></i> Submit anonymously
+                            </label>
+                            <small class="form-text text-muted">
+                                Anonymous feedback helps maintain privacy while still allowing you to track the status
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <i class="fas fa-paper-plane"></i> Submit Feedback
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleFoodOptions() {
+    var category = document.getElementById('category').value;
+    var foodOptions = document.getElementById('foodOptions');
+    
+    if (category === 'Food') {
+        foodOptions.style.display = 'block';
+    } else {
+        foodOptions.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

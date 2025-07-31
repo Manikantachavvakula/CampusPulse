@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+
+{% block title %}Facility Ratings - Hostel Feedback Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-chart-line"></i> Facility Ratings Dashboard</h2>
+        <p class="text-muted">Overview of how students rate different hostel facilities</p>
+    </div>
+</div>
+
+<!-- Quick Stats Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-star fa-2x mb-2"></i>
+                <h5 id="overallRating">0.0</h5>
+                <p class="mb-0">Overall Rating</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-2x mb-2"></i>
+                <h5 id="totalRatings">0</h5>
+                <p class="mb-0">Total Ratings</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-building fa-2x mb-2"></i>
+                <h5 id="topFacility">-</h5>
+                <p class="mb-0">Top Rated</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body text-center">
+                <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                <h5 id="needsImprovement">-</h5>
+                <p class="mb-0">Needs Attention</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-bar"></i> Average Ratings by Facility</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="facilityChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-pie"></i> Rating Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="distributionChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Reviews -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-comments"></i> Recent Reviews</h5>
+            </div>
+            <div class="card-body">
+                <div id="recentReviews">
+                    <div class="text-center">
+                        <i class="fas fa-spinner fa-spin"></i> Loading reviews...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if session.role != 'admin' %}
+<div class="row mt-3">
+    <div class="col-12 text-center">
+        <a href="{{ url_for('rate_facilities') }}" class="btn btn-success btn-lg">
+            <i class="fas fa-star"></i> Rate a Facility
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script>
+// Load facility ratings data and create charts
+fetch('/api/facility_ratings_data')
+    .then(response => response.json())
+    .then(data => {
+        createFacilityChart(data.facilities);
+        createDistributionChart(data.distribution);
+        displayRecentReviews(data.recent_reviews);
+        updateStats(data.facilities);
+    })
+    .catch(error => {
+        console.error('Error loading facility ratings data:', error);
+    });
+
+function createFacilityChart(facilities) {
+    const ctx = document.getElementById('facilityChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: facilities.map(f => f.facility),
+            datasets: [{
+                label: 'Average Rating',
+                data: facilities.map(f => f.average),
+                backgroundColor: [
+                    '#28a745', '#007bff', '#ffc107', '#dc3545', '#17a2b8'
+                ],
+                borderWidth: 1,
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 5,
+                    ticks: { stepSize: 1 }
+                }
+            }
+        }
+    });
+}
+
+function createDistributionChart(distribution) {
+    const ctx = document.getElementById('distributionChart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(distribution),
+            datasets: [{
+                data: Object.values(distribution),
+                backgroundColor: ['#dc3545', '#fd7e14', '#ffc107', '#28a745', '#007bff'],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+}
+
+function displayRecentReviews(reviews) {
+    const container = document.getElementById('recentReviews');
+    
+    if (reviews.length === 0) {
+        container.innerHTML = '<div class="alert alert-info">No reviews available yet.</div>';
+        return;
+    }
+    
+    let html = '';
+    reviews.forEach(review => {
+        const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+        html += `
+            <div class="review-item border-bottom pb-3 mb-3">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <strong>${review.facility}</strong>
+                        <span class="text-warning ml-2">${stars}</span>
+                    </div>
+                    <small class="text-muted">${review.student} • ${review.date}</small>
+                </div>
+                <p class="mt-2 mb-0">${review.review}</p>
+            </div>
+        `;
+    });
+    
+    container.innerHTML = html;
+}
+
+function updateStats(facilities) {
+    const totalRatings = facilities.reduce((sum, f) => sum + f.total, 0);
+    const overallAvg = facilities.reduce((sum, f) => sum + (f.average * f.total), 0) / totalRatings || 0;
+    
+    const topFacility = facilities.reduce((top, f) => f.average > top.average ? f : top, facilities[0] || {facility: '-', average: 0});
+    const needsAttention = facilities.reduce((low, f) => f.average < low.average && f.total > 0 ? f : low, facilities[0] || {facility: '-', average: 5});
+    
+    document.getElementById('overallRating').textContent = overallAvg.toFixed(1);
+    document.getElementById('totalRatings').textContent = totalRatings;
+    document.getElementById('topFacility').textContent = topFacility.facility;
+    document.getElementById('needsImprovement').textContent = needsAttention.facility;
+}
+</script>
+{% endblock %}

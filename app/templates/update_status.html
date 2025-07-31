@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Update Feedback Status - Hostel Feedback Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4><i class="fas fa-edit"></i> Update Feedback Status</h4>
+            </div>
+            <div class="card-body">
+                <!-- Feedback Details -->
+                <div class="card mb-3">
+                    <div class="card-header bg-light">
+                        <h6><i class="fas fa-info-circle"></i> Feedback Details</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Feedback ID:</strong> #{{ feedback.id }}</p>
+                                <p><strong>Student:</strong> 
+                                    {% if feedback.is_anonymous %}
+                                        <span class="badge badge-secondary">
+                                            <i class="fas fa-user-secret"></i> Anonymous Submission
+                                        </span>
+                                    {% else %}
+                                        {{ feedback.user.username }}
+                                        <br><small class="text-muted">Roll: {{ feedback.user.roll_number }}</small>
+                                    {% endif %}
+                                </p>
+                                <p><strong>Category:</strong> <span class="badge badge-secondary">{{ feedback.category }}</span></p>
+                                <p><strong>Current Status:</strong> 
+                                    {% if feedback.status == 'pending' %}
+                                        <span class="badge badge-warning">Pending</span>
+                                    {% elif feedback.status == 'resolved' %}
+                                        <span class="badge badge-success">Resolved</span>
+                                    {% else %}
+                                        <span class="badge badge-danger">Rejected</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Date Submitted:</strong> {{ feedback.created_at.strftime('%d %b %Y, %I:%M %p') }}</p>
+                                {% if feedback.rating %}
+                                <p><strong>Rating:</strong> 
+                                    {% for i in range(1, 6) %}
+                                        {% if i <= feedback.rating %}
+                                            <i class="fas fa-star text-warning"></i>
+                                        {% else %}
+                                            <i class="far fa-star text-muted"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </p>
+                                {% endif %}
+                                {% if feedback.category == 'Food' and feedback.days %}
+                                <p><strong>Days:</strong> {{ feedback.days }}</p>
+                                {% endif %}
+                                {% if feedback.quality %}
+                                <p><strong>Food Quality:</strong> {{ feedback.quality }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <p><strong>Student Comments:</strong></p>
+                                <div class="alert alert-light">{{ feedback.comments }}</div>
+                            </div>
+                        </div>
+                        {% if feedback.admin_response %}
+                        <div class="row">
+                            <div class="col-12">
+                                <p><strong>Previous Admin Response:</strong></p>
+                                <div class="alert alert-info">{{ feedback.admin_response }}</div>
+                                {% if feedback.resolver %}
+                                <small class="text-muted">Resolved by: {{ feedback.resolver.username }} on {{ feedback.resolved_at.strftime('%d %b %Y, %I:%M %p') }}</small>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Status Update Form -->
+                <form method="POST">
+                    <div class="form-group">
+                        <label for="status">Update Status *</label>
+                        <select class="form-control" id="status" name="status" required>
+                            <option value="">Select New Status</option>
+                            <option value="pending" {% if feedback.status == 'pending' %}disabled{% endif %}>Mark as Pending</option>
+                            <option value="resolved" {% if feedback.status == 'resolved' %}disabled{% endif %}>Mark as Resolved</option>
+                            <option value="rejected" {% if feedback.status == 'rejected' %}disabled{% endif %}>Mark as Rejected</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="admin_response">Admin Response/Resolution Details</label>
+                        <textarea class="form-control" id="admin_response" name="admin_response" rows="4" 
+                                placeholder="Enter resolution details, actions taken, or reason for rejection..."></textarea>
+                        <small class="form-text text-muted">
+                            This response will be visible to the student and helps track resolution actions.
+                        </small>
+                    </div>
+                    
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Update Status
+                        </button>
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary ml-2">
+                            <i class="fas fa-arrow-left"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

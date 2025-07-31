@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Rate Facilities - Hostel Feedback Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4><i class="fas fa-star"></i> Rate Hostel Facilities</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">Help improve our facilities by sharing your experience and rating different areas of the hostel.</p>
+                
+                <form method="POST" id="ratingForm">
+                    <div class="form-group">
+                        <label for="facility">Select Facility *</label>
+                        <select class="form-control" id="facility" name="facility" required>
+                            <option value="">Choose a facility to rate</option>
+                            <option value="Canteen">🍽️ Canteen/Mess</option>
+                            <option value="Library">📚 Library</option>
+                            <option value="Sports Ground">⚽ Sports Ground</option>
+                            <option value="Computer Lab">💻 Computer Lab</option>
+                            <option value="Hostel Rooms">🏠 Hostel Rooms</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="rating">Your Rating *</label>
+                        <div class="rating-stars mb-2">
+                            <input type="radio" id="star5" name="rating" value="5" required>
+                            <label for="star5" class="star">⭐</label>
+                            <input type="radio" id="star4" name="rating" value="4">
+                            <label for="star4" class="star">⭐</label>
+                            <input type="radio" id="star3" name="rating" value="3">
+                            <label for="star3" class="star">⭐</label>
+                            <input type="radio" id="star2" name="rating" value="2">
+                            <label for="star2" class="star">⭐</label>
+                            <input type="radio" id="star1" name="rating" value="1">
+                            <label for="star1" class="star">⭐</label>
+                        </div>
+                        <small class="form-text text-muted">Click on stars to rate (5 = Excellent, 1 = Poor)</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="review">Review (Optional)</label>
+                        <textarea class="form-control" id="review" name="review" rows="3" 
+                                placeholder="Share your experience, suggestions for improvement, what you liked/disliked..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="anonymous" name="anonymous" value="1">
+                            <label class="form-check-label" for="anonymous">
+                                <i class="fas fa-user-secret"></i> Submit rating anonymously
+                            </label>
+                            <small class="form-text text-muted">
+                                Anonymous ratings help provide honest feedback without revealing your identity
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>Note:</strong> You can rate each facility only once (unless submitted anonymously).
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success btn-block">
+                        <i class="fas fa-star"></i> Submit Rating
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.rating-stars {
+    direction: rtl;
+    display: inline-flex;
+    flex-direction: row-reverse;
+}
+
+.rating-stars input[type="radio"] {
+    display: none;
+}
+
+.rating-stars label {
+    font-size: 2rem;
+    color: #ddd;
+    cursor: pointer;
+    margin: 0 2px;
+    transition: color 0.3s;
+}
+
+.rating-stars label:hover,
+.rating-stars label:hover ~ label,
+.rating-stars input[type="radio"]:checked ~ label {
+    color: #ffc107;
+}
+</style>
+{% endblock %}
