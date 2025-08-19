@@ -15,11 +15,11 @@ os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 db.init_app(app)
 init_routes(app)
 
+
 def migrate_database():
     """Add new columns to existing database"""
     try:
         with app.app_context():
-            # Check if new columns exist, if not add them
             try:
                 with db.engine.connect() as conn:
                     conn.execute(db.text('ALTER TABLE feedback ADD COLUMN admin_response TEXT'))
@@ -67,24 +67,29 @@ def migrate_database():
     except Exception as e:
         print(f"Migration note: {e}")
 
+
 def create_tables():
     """Initialize database and create admin user"""
     with app.app_context():
         db.create_all()
-        
+
         # Run migration for new columns
         migrate_database()
-        
+
         # Create admin user if doesn't exist
         admin = User.query.filter_by(username='admin').first()
         if not admin:
-            admin = User(username='admin', email='admin@hostel.com', roll_number='ADMIN001', role='admin')
+            admin = User(username='admin', email='admin@hostel.com',
+                         roll_number='ADMIN001', role='admin')
             admin.set_password('admin123')
             db.session.add(admin)
             db.session.commit()
 
+
 # Initialize the database when the module is imported
 create_tables()
 
-if __name__ == '__main__':
-    app.run(debug=True)
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port, debug=False)
