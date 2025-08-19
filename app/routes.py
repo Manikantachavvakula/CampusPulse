@@ -2,7 +2,9 @@ from flask import render_template, request, redirect, url_for, flash, session, j
 from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
-from models import db, User, Feedback, Rating
+from app.models import db, User, Feedback, Rating
+
+
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in {'png', 'jpg', 'jpeg'}
